@@ -36,7 +36,7 @@
 %<class>\NeedsTeXFormat{LaTeX2e}
 %<class>\ProvidesClass{apa6e}
 %<*class>
-    [2011/02/12 v0.1 APA 6e manuscript formatting]
+    [2011/03/01 v0.2 APA 6e manuscript formatting]
 %</class>
 %
 %<*driver>
@@ -69,6 +69,7 @@
 %
 %
 % \changes{v0.1}{2011/02/12}{Initial version}
+% \changes{v0.2}{2011/03/01}{Added support for appendices}
 %
 % \GetFileInfo{apa6e.dtx}
 %
@@ -116,6 +117,16 @@
 % \end{verbatim}
 % Pretty simple, really. But for a few more details, read on.
 %
+% \section{Appendices}
+%
+% In APA style, appendices are not named. So to get appendices, use
+% the same mechanism as normal \LaTeX (i.e., type |\appendix| to
+% switch to `appendix mode' and then use |\section| to start each
+% appendix), but note that the section title will be ignored. You can
+% type |\section{Stimuli}| or |\section{La La La}| or just
+% |\section{}| and you'll get the same result regardless (something
+% like ``Appendix B'').
+%
 % \subsection{References}
 %
 % This class does not provide any built-in support for formatting
@@ -144,7 +155,7 @@
 % this also inserts a large note on the front page to remind you that
 % you are looking at a draft with illegitimate formatting.
 %
-% \subsubsection\texttt{endnotes}
+% \subsubsection{\texttt{endnotes}}
 % APA style allows footnotes to either be formatted as footnotes
 % directly in the text, or placed at the end in a `Footnotes'
 % section. By default we do the former; if you really want the latter
@@ -396,6 +407,29 @@ Author Note\par\RaggedRight\@authornote%
     {\Centering\normalfont\normalsize}}
 %    \end{macrocode}
 % \end{macro}
+% \begin{macro}{\appendix}
+% Appendix handling is pretty straightforward, except that we have to
+% rearrange how floats are numbered (they go A1, A2, ... within
+% appendix A), and this is complicated by the need to work properly
+% with \textsc{endfloat}. So if the \textsc{leavefloats} option is in
+% effect, we'll want to change numbering immediately, but if we're
+% putting floats at the end, then we need to arrange for the numbering
+% changes to happen when \textsc{endfloat} is part of the way through
+% processing the floats. This is done by defining
+% |\apaSIXe@appendixfloats@setup| appropriately in the two cases,
+% below.
+%    \begin{macrocode}
+\renewcommand{\appendix}{\setcounter{section}{0}%
+    \renewcommand{\section}[1]{\addtocounter{section}{1}%
+        \apaSIXe@appendixfloats@setup{\Alph{section}}%
+        \mspart{Appendix \Alph{section}}}}
+\newcommand{\apaSIXe@appendixfloats@go}[1]{%
+    \setcounter{figure}{0}%
+    \renewcommand{\thefigure}{#1\arabic{figure}}%
+    \setcounter{table}{0}%
+    \renewcommand{\thetable}{#1\arabic{table}}}
+%    \end{macrocode}
+% \end{macro}
 % \subsection{Endnotes}
 % If the user requested endnotes, then set them up here. I'm not sure
 % why you'd want this, but I wrote the code before realizing that
@@ -414,12 +448,22 @@ Author Note\par\RaggedRight\@authornote%
 % This must come after the endnotes handling above, since they both
 % use |\AtEndDocument| and floats are supposed to come after
 % footnotes.
+%
+% If \textsc{endfloat} is in use, then we have to arrange for
+% |\apaSIXe@appendixfloats@go| to be called partly through the floats
+% being processed. We accomplish this by writing out a call to it to
+% the \texttt{fff} and \texttt{ttt} files that it uses.
 %    \begin{macrocode}
 \ifdefined\apaSIXe@leavefloats
-    \relax
+    \newcommand{\apaSIXe@appendixfloats@setup}[1]{\apaSIXe@appendixfloats@go{#1}}
 \else
     \RequirePackage[nolists,noheads,nomarkers,tablesfirst]{endfloat}
     \AtBeginDelayedFloats{\@doublespacing}
+    \newcommand{\apaSIXe@appendixfloats@setup}[1]{%
+        \efloat@iwrite{fff}{%
+            \string\makeatletter\string\apaSIXe@appendixfloats@go{#1}\string\makeatother}%
+        \efloat@iwrite{ttt}{%
+            \string\makeatletter\string\apaSIXe@appendixfloats@go{#1}\string\makeatother}}
 \fi
 %    \end{macrocode}
 % 
