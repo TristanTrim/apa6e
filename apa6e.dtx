@@ -70,7 +70,11 @@
 %
 % \changes{v0.1}{2011/02/12}{Initial version}
 % \changes{v0.2}{2011/03/01}{Added support for appendices}
-% \changes{v0.3}{2011/??/??}{Added \texttt{floatmarkers} option}
+% \changes{v0.3}{2011/??/??}{Added \texttt{floatmarkers}
+%   option. Increased |\headheight| to make \textsc{fancyhdr}
+%   happy. Made it possible to refer to appendices by
+%   label. Implemented the rule that if there is only a single
+%   appendix, it is simply called ``Appendix'', not ``Appendix A''.}
 %
 % \GetFileInfo{apa6e.dtx}
 %
@@ -238,9 +242,10 @@
 \RequirePackage{times}
 \RequirePackage{mathptmx}
 %    \end{macrocode}
-% Set margins and justification.
+% Set margins and justification. If |\headheight| is less than 15 pt,
+% \textsc{fancyhdr} will complain.
 %    \begin{macrocode}
-\RequirePackage[margin=1in]{geometry}
+\RequirePackage[margin=1in,headheight=15pt]{geometry}
 \RequirePackage[document]{ragged2e}
 %    \end{macrocode}
 % APA 6e says that indents should be ``5--7 spaces, or 1/2
@@ -427,11 +432,26 @@ Author Note\par\RaggedRight\@authornote%
 % processing the floats. This is done by defining
 % |\apaSIXe@appendixfloats@setup| appropriately in the two cases,
 % below.
+%
+% The other slightly messy bit is that if there is only one appendix,
+% it is called ``Appendix'', but if there is more than one, then the
+% first is called ``Appendix A''. So we need to keep track of how many
+% appendices the document contains. We do this using a nasty |\label|
+% hack to get the necessary information into the \texttt{.aux} file.
 %    \begin{macrocode}
-\renewcommand{\appendix}{\setcounter{section}{0}%
-    \renewcommand{\section}[1]{\addtocounter{section}{1}%
-        \apaSIXe@appendixfloats@setup{\Alph{section}}%
-        \mspart{Appendix \Alph{section}}}}
+\RequirePackage{ifthen}
+\renewcommand{\appendix}{\setcounter{section}{0}
+    \renewcommand{\section}[1]{\addtocounter{section}{1}
+        \ifthenelse{\equal{\value{section}}{2}}
+            {\label{apaSIXe@has@multiple@appendices}}
+            {}
+        \apaSIXe@appendixfloats@setup{\Alph{section}}
+        \def\@currentlabel{\Alph{section}}
+        \ifdefined\r@apaSIXe@has@multiple@appendices
+          \mspart{Appendix \Alph{section}}
+        \else
+          \mspart{Appendix}
+        \fi}}
 \newcommand{\apaSIXe@appendixfloats@go}[1]{%
     \setcounter{figure}{0}%
     \renewcommand{\thefigure}{#1\arabic{figure}}%
