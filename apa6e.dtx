@@ -184,13 +184,30 @@
 %
 % \subsection{Known limitations}
 %
-% We currently make no attempt to alter the standard list
-% environments (|itemize|, |enumerate|). As far as I can tell they are
-% already APA compliant, but they might introduce enough extra
-% vertical spacing as to be visually unpleasant. If this bothers you
-% and you find a good solution, let me know. (Also, we don't even
-% attempt to reproduce \textsf{apa.cls}'s |seriate| environment. I'm
-% not sure why one would use it in the first place.)
+% According to the APA manual (\S 8.03, page 230), appendices are
+% supposed to come after tables and figures. This currently cannot be
+% done using \textsl{apa6e}. The problem is that tables and figures
+% can appear in the appendix, and then what? Are they supposed to move
+% `backwards' in the document to the appropriate section? (This would
+% be extremely difficult to implement.) To make things more
+% interesting, the manual is somewhat unclear on how such tables and
+% figures are supposed to be treated as well; \S 2.13 (page 39) says
+% that unnumbered tables can appear as the body of an appendix, and
+% these presumably should not be moved to the Tables section\dots So,
+% if you have any ideas for how this should work, please let us know.
+%
+% If a numbered equation occurs inside of an appendix, the number is
+% supposed to be prefixed with the appendix letter (``Equation A1''),
+% just like figure and table numbering. We do this for figures and
+% tables, but not equations; we should fix that.
+%
+% We currently make no attempt to alter the standard list environments
+% (|itemize|, |enumerate|). As far as I can tell they are already APA
+% compliant, but they might introduce enough extra vertical spacing as
+% to be visually unpleasant. If this bothers you and you find a good
+% solution, let me know. (Also, we don't even attempt to reproduce
+% \textsf{apa.cls}'s |seriate| environment. Again, if this bothers
+% you, let me know.)
 %
 % We only format manuscripts; in particular, there is no equivalent to
 % \textsf{apa.cls}'s |jou| or |doc| modes. I don't really see the
@@ -242,10 +259,13 @@
 \ProcessOptions\relax
 \LoadClass[12pt]{article}
 %    \end{macrocode}
-% We want to typeset everything in Times, including math.
+% We want to typeset everything in Times, including math. But the
+% \textsl{mathptmx} package breaks |\boldsymbol|, so we include
+% \textsl{bm} as well, which fixes it again.
 %    \begin{macrocode}
 \RequirePackage{times}
 \RequirePackage{mathptmx}
+\RequirePackage{bm}
 %    \end{macrocode}
 % Set margins and justification. If |\headheight| is less than 15 pt,
 % \textsc{fancyhdr} will complain.
