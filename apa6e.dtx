@@ -158,7 +158,7 @@
 % When reading drafts, I find the APA manuscript format quite
 % usable, except that I find it very annoying to have to flip back and
 % forth between the text and tables/figures/their captions. Use this
-% option if you want to let \LaTeX do use normal handling of floats,
+% option if you want to let \LaTeX do its normal handling of floats,
 % e.g.: |\documentclass[leavefloats]{apa6e}|.
 %
 % To make sure you don't forget to take it out before submitting,
@@ -170,7 +170,7 @@
 % ``Figure 3 about here'' and so on. As far as I can tell, this
 % is actually not part of APA 6e style, but if you want to do it
 % anyway, then this option is here for you:
-% |\documentclass{floatmarkers}{apa6e}|.
+% |\documentclass[floatmarkers]{apa6e}|.
 %
 % \subsubsection{\texttt{endnotes}}
 % APA style allows footnotes to either be formatted as footnotes
@@ -179,8 +179,9 @@
 % for some reason, then enable this option:
 % |\documentclass[endnotes]{apa6e}|.
 %
-% Of course, if you want multiple, then you can accomplish that in the
-% usual way: |\documentclass[leavefloats,endnotes]{apa6e}|.
+% Of course, if you want multiple options at once, then you can
+% accomplish that in the usual way:
+% |\documentclass[leavefloats,endnotes]{apa6e}|.
 %
 % \subsection{Known limitations}
 %
@@ -328,7 +329,7 @@ Author Note\par\RaggedRight\@authornote%
 \mspart{\@title}}
 %    \end{macrocode}
 % By default, the \textsf{apacite} package will format the beginning
-% of the references as if a section, by calling
+% of the references as if it were a section, by calling
 % |\section{References}|. But that would be wrong. So we override the
 % internal command that it uses to do this.
 %    \begin{macrocode}
@@ -507,7 +508,7 @@ Author Note\par\RaggedRight\@authornote%
 % If \textsc{endfloat} is in use, then we have to arrange for
 % |\apaSIXe@appendixfloats@figureson| and
 % |\apaSIXe@appendixfloats@tableson| to be called partly through the
-% floats being processed. We accomplish this by writing out a calls to
+% floats being processed. We accomplish this by writing out calls to
 % them in the \texttt{fff} and \texttt{ttt} files that
 % \textsc{endfloat} uses. (Note that it's important to have two
 % different commands --- we used to have just one, but then whichever
