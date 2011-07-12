@@ -36,7 +36,7 @@
 %<class>\NeedsTeXFormat{LaTeX2e}
 %<class>\ProvidesClass{apa6e}
 %<*class>
-    [2011/03/03 v0.3 APA 6e manuscript formatting]
+    [2011/03/03 v0.3-dev APA 6e manuscript formatting]
 %</class>
 %
 %<*driver>
@@ -80,6 +80,15 @@
 %   A''. Fixed a bug where floats were sometimes labeled as being in
 %   an appendix (like ``Figure A1'') even when they weren't (thanks to
 %   J.~Olson and Alex Sommerfeldt for the report and fix).}
+%
+%   \changes{v0.4}{????/??/??}{Include package \textsc{bm} by default,
+%   so that |boldsymbol| and friends work (thanks to Sy-Miin Chow for
+%   the report). Disable hyphenation as per APA rules (thanks to
+%   J.~Olson for the heads-up), and therefore discard our use of
+%   \textsc{RaggedRight}, whose only purpose was to make hyphenation
+%   nicer. This also has the helpful side-effect of removing the
+%   annoying bug where table and figure environments were indented by
+%   default.}
 %
 % \GetFileInfo{apa6e.dtx}
 %
@@ -268,16 +277,25 @@
 \RequirePackage{mathptmx}
 \RequirePackage{bm}
 %    \end{macrocode}
-% Set margins and justification. If |\headheight| is less than 15 pt,
-% \textsc{fancyhdr} will complain.
+% Set margins. If |\headheight| is less than 15 pt, \textsc{fancyhdr}
+% will complain.
 %    \begin{macrocode}
 \RequirePackage[margin=1in,headheight=15pt]{geometry}
-\RequirePackage[document]{ragged2e}
 %    \end{macrocode}
-% APA 6e says that indents should be ``5--7 spaces, or 1/2
-% inch''. We'll use the latter.
+% ``Do not divide words at the end of a line, and do not use the
+% hyphenation function to break words at the ends of lines. Let a line
+% run short rather than break a word at the end of a line.'' (\S
+% 8.0.3, p229)
 %    \begin{macrocode}
-\setlength{\RaggedRightParindent}{0.5in}
+\RequirePackage[none]{hyphenat}
+%    \end{macrocode}
+% We want no justification, and APA 6e says that indents should be
+% ``5--7 spaces, or 1/2 inch''. We'll use the latter. |\raggedright|
+% has a habit of setting |\parindent| to zero, so let's make sure it
+% doesn't have a chance.
+%    \begin{macrocode}
+\newcommand{\apaSIXe@raggedright}{\raggedright\setlength{\parindent}{0.5in}}
+\AtBeginDocument{\apaSIXe@raggedright}
 %    \end{macrocode}
 % Doublespacing: The \textsf{setspace} package has the good taste to
 % disable doublespacing for things like captions and footnotes; the
@@ -315,7 +333,7 @@
 \renewcommand{\maketitle}{%
 \thispagestyle{titlepage}%
 \vspace*{1in}%
-\Centering\@title\\\@author%
+\centering\@title\\\@author%
 \vfill%
 \ifdefined%
   \apaSIXe@leavefloats%
@@ -323,7 +341,7 @@
       your text for easier reading. Don't forget to remove the
       \texttt{leavefloats} option before you submit!}\vfill}%
 \fi
-Author Note\par\RaggedRight\@authornote%
+Author Note\par\apaSIXe@raggedright\@authornote%
 \mspart{Abstract}%
 \@abstract%
 \mspart{\@title}}
@@ -351,10 +369,10 @@ Author Note\par\RaggedRight\@authornote%
 \restylefloat{table}
 \floatstyle{plain} % This puts captions below the figure
 \restylefloat{figure}
-\RequirePackage[singlelinecheck=off,justification=RaggedRight]{caption}
-\DeclareCaptionLabelFormat{tablelabel}{\hspace{-\RaggedRightParindent}#1 #2}
-\DeclareCaptionLabelFormat{figurelabel}{\hspace{-\RaggedRightParindent}\textit{#1 #2}}
-\DeclareCaptionTextFormat{tabletext}{\hspace{-\RaggedRightParindent}\textit{#1}}
+\RequirePackage[singlelinecheck=off,justification=raggedright]{caption}
+\DeclareCaptionLabelFormat{tablelabel}{#1 #2}
+\DeclareCaptionLabelFormat{figurelabel}{\textit{#1 #2}}
+\DeclareCaptionTextFormat{tabletext}{\textit{#1}}
 \captionsetup[table]{position=above,labelformat=tablelabel,labelsep=newline,
                      textformat=tabletext}
 \captionsetup[figure]{position=below,labelformat=figurelabel}
@@ -402,7 +420,7 @@ Author Note\par\RaggedRight\@authornote%
 \renewcommand{\section}{\@startsection {section}{1}{\z@}%
     {0.2\baselineskip \@plus 0.2ex \@minus 0.2ex}%
     {0.2\baselineskip \@plus .2ex}%
-    {\Centering\normalfont\normalsize\bfseries}}
+    {\centering\normalfont\normalsize\bfseries}}
 \renewcommand{\subsection}{\@startsection{subsection}{2}{\z@}%
     {0.2\baselineskip \@plus 0.2ex \@minus 0.2ex}%
     {0.2\baselineskip \@plus 0.2ex}%
@@ -444,7 +462,7 @@ Author Note\par\RaggedRight\@authornote%
 \newcommand{\mspart}{\newpage\@startsection {section}{1}{\z@}%
     {-0.2\baselineskip \@plus -0.2ex \@minus -0.2ex}%
     {0.2\baselineskip \@plus .2ex}%
-    {\Centering\normalfont\normalsize}}
+    {\centering\normalfont\normalsize}}
 %    \end{macrocode}
 % \end{macro}
 % \begin{macro}{\appendix}
@@ -496,8 +514,11 @@ Author Note\par\RaggedRight\@authornote%
     \RequirePackage{endnotes}
     \renewcommand{\enoteheading}{\mspart{Footnotes}}
     \def\enotesize{\normalsize}
-    \renewcommand{\footnote}[1]{\def\apaSIXe@hasendnotes\relax{}\endnote{#1}}
+    \renewcommand{\footnote}[1]{\def\apaSIXe@hasendnotes\relax{}\endnote{\apaSIXe@raggedright #1}}
     \AtEndDocument{\ifdefined \apaSIXe@hasendnotes \theendnotes \fi}
+\else
+    \let\apaSIXe@real@footnote\footnote
+    \renewcommand{\footnote}[1]{\apaSIXe@real@footnote{\apaSIXe@raggedright #1}}
 \fi
 %    \end{macrocode}
 % \subsection{Floats at the end}
@@ -542,6 +563,5 @@ Author Note\par\RaggedRight\@authornote%
             \string\makeatletter\string\apaSIXe@appendixfloats@tableson{#1}\string\makeatother}}
 \fi
 %    \end{macrocode}
-% 
 % \Finale
 \endinput
