@@ -1,0 +1,3 @@
+The American Psychological Association publishes detailed guidelines on how manuscripts should be formatted for submission to their journals, and many other journals use these guidelines as well. The venerable 'apa.cls' is used to produce such manuscripts from LaTeX -- but apa.cls currently only knows how to produce manuscripts in the style of the APA 5th edition (from 2001), and cannot produce manuscripts complaint with the current 6th edition guidelines (published in 2009).
+
+apa6e.cls is a simple class file for producing manuscripts compatible with the APA 6th edition guidelines.
