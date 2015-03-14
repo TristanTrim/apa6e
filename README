@@ -1,9 +1,8 @@
-This is a minimalist class file for formatting manuscripts in the
-style described the American Psychological Association (APA) 6th
-edition guidelines. Perhaps someday the more traditional (and capable)
-apa.cls will gain support for the 6th edition of the APA guidelines,
-in which case you should probably use it instead. But in the mean
-time, this class may be useful.
+[Note: I don't actually use this myself anymore, I use the apa6 package. But it's preserved here for posterity.]
+
+The American Psychological Association publishes detailed guidelines on how manuscripts should be formatted for submission to their journals, and many other journals use these guidelines as well. The venerable 'apa.cls' is used to produce such manuscripts from LaTeX -- but apa.cls currently only knows how to produce manuscripts in the style of the APA 5th edition (from 2001), and cannot produce manuscripts complaint with the current 6th edition guidelines (published in 2009).
+
+apa6e.cls is a simple class file for producing manuscripts compatible with the APA 6th edition guidelines. 
 
 Here's a sample document to get you started:
 \begin{verbatim}
